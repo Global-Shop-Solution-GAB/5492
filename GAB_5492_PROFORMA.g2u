@@ -1,0 +1,24 @@
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'Hook 34910
+f.Intrinsic.Control.If(v.Caller.Hook,=,"34901")
+	V.Passed.000006.Set("Proforma")
+f.Intrinsic.Control.elseIf(v.Caller.Hook,=,"34910")
+	V.Local.sOrderNo.Declare
+	v.Local.sCallParams.Declare
+	V.Local.sTitle.Declare
+	v.Local.sInv.Declare
+	v.Local.ssql.Declare
+	v.Local.sOrderNo.Set(V.Passed.009002)
+	v.Local.sInv.Set(v.Passed.009004)
+	F.Intrinsic.String.Concat(V.local.sOrderNo,"!*!P!*!PROFORMA INVOICE!*! ",V.Local.sCallParams)
+	F.Global.General.CallWrapperSync(910050,V.Local.sCallParams)
+	f.ODBC.Connection!con.openconnection(v.Ambient.PDSN,v.Ambient.PUser,v.Ambient.PPass)
+	f.Intrinsic.String.Build("UPDATE BI_ACKNWLDGMNT SET LN_USER_FLD_2='{0}' WHERE TERMINAL='{1}' AND RPTID='000054'",v.Local.sInv,v.Caller.Terminal,v.Local.ssql)
+	f.ODBC.Connection!con.execute(v.Local.ssql)
+	f.ODBC.Connection!con.Close
+	f.Intrinsic.Control.end
+f.Intrinsic.Control.EndIf
+Program.Sub.Main.End
